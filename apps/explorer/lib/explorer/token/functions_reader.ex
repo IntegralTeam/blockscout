@@ -3,6 +3,8 @@ defmodule Explorer.Token.FunctionsReader do
   Reads Token's fields using Smart Contract functions from the blockchain.
   """
 
+  require Logger
+
   alias Explorer.Chain.Hash
   alias Explorer.SmartContract.Reader
 
@@ -116,12 +118,19 @@ defmodule Explorer.Token.FunctionsReader do
   defp fetch_functions_from_contract(contract_address_hash, contract_functions, retry, result \\ %{}) do
     contract_functions_result = Reader.query_contract(contract_address_hash, @contract_abi, contract_functions)
 
-    contract_functions_with_errors = contract_functions_with_errors(contract_functions_result)
+    functions_with_errors = functions_with_errors(contract_functions_result)
 
-    if Enum.any?(contract_functions_with_errors) && retry > 0 do
+    if Enum.any?(functions_with_errors) && retry > 0 do
+      log_functions_with_errors(contract_address_hash, functions_with_errors, retry)
+
+      functions_with_errors_formatted =
+        Enum.reduce(functions_with_errors, %{}, fn {function, _error}, acc ->
+          Map.put(acc, function, [])
+        end)
+
       fetch_functions_from_contract(
         contract_address_hash,
-        contract_functions_with_errors,
+        functions_with_errors_formatted,
         retry - 1,
         Map.merge(result, contract_functions_result)
       )
@@ -130,17 +139,29 @@ defmodule Explorer.Token.FunctionsReader do
     end
   end
 
-  defp contract_functions_with_errors(contract_functions) do
-    contract_functions
-    |> Enum.filter(fn function ->
+  defp functions_with_errors(contract_functions) do
+    Enum.filter(contract_functions, fn function ->
       case function do
         {_, {:error, _}} -> true
         {_, {:ok, _}} -> false
       end
     end)
-    |> Enum.reduce(%{}, fn {name, _error}, acc ->
-      Map.put(acc, name, [])
-    end)
+  end
+
+  defp log_functions_with_errors(contract_address_hash, functions_with_errors, retries) do
+    error_messages =
+      Enum.map(functions_with_errors, fn {function, {:error, error_message}} ->
+        "function: #{function} - error: #{error_message} \n"
+      end)
+
+    Logger.debug(
+      [
+        "<Token contract hash: #{contract_address_hash}> error while fetching metadata: \n",
+        error_messages,
+        "Retries left: #{retries}"
+      ],
+      fetcher: :token_functions
+    )
   end
 
   defp format_contract_functions_result(contract_functions, contract_address_hash) do
