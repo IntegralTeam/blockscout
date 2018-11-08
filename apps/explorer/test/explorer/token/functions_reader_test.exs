@@ -52,7 +52,9 @@ defmodule Explorer.Token.FunctionsReaderTest do
       assert FunctionsReader.get_functions_of(token.contract_address_hash) == expected
     end
 
-    test "returns only the functions that were readed without error", %{json_rpc_named_arguments: json_rpc_named_arguments} do
+    test "returns only the functions that were readed without error", %{
+      json_rpc_named_arguments: json_rpc_named_arguments
+    } do
       token = insert(:token, contract_address: build(:contract_address))
 
       if json_rpc_named_arguments[:transport] == EthereumJSONRPC.Mox do
@@ -89,7 +91,7 @@ defmodule Explorer.Token.FunctionsReaderTest do
 
       expected = %{
         name: "Bancor",
-        total_supply: 1_000_000_000_000_000_000,
+        total_supply: 1_000_000_000_000_000_000
       }
 
       assert FunctionsReader.get_functions_of(token.contract_address_hash) == expected
@@ -209,8 +211,52 @@ defmodule Explorer.Token.FunctionsReaderTest do
           end
         )
 
-        assert FunctionsReader.get_functions_of(token.contract_address_hash) == %{ name: long_token_name_shortened }
+        assert FunctionsReader.get_functions_of(token.contract_address_hash) == %{name: long_token_name_shortened}
       end
+    end
+
+    test "retries when some function gave error", %{json_rpc_named_arguments: json_rpc_named_arguments} do
+      token = insert(:token, contract_address: build(:contract_address))
+
+      if json_rpc_named_arguments[:transport] == EthereumJSONRPC.Mox do
+        expect(
+          EthereumJSONRPC.Mox,
+          :json_rpc,
+          1,
+          fn [%{id: "decimals"}, %{id: "name"}, %{id: "symbol"}, %{id: "totalSupply"}], _opts ->
+            {:ok,
+             [
+               %{
+                 error: %{code: -32015, data: "something", message: "some error"},
+                 id: "symbol",
+                 jsonrpc: "2.0"
+               },
+               %{
+                 id: "decimals",
+                 result: "0x0000000000000000000000000000000000000000000000000000000000000012"
+               }
+             ]}
+          end
+        )
+
+        expect(
+          EthereumJSONRPC.Mox,
+          :json_rpc,
+          1,
+          fn [%{id: "symbol"}], _opts ->
+            {:ok,
+             [
+               %{
+                 id: "symbol",
+                 result:
+                   "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003424e540000000000000000000000000000000000000000000000000000000000"
+               }
+             ]}
+          end
+        )
+      end
+
+      assert FunctionsReader.get_functions_of(token.contract_address_hash) == %{decimals: 18, symbol: "BNT"}
     end
   end
 end
