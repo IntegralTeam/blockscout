@@ -173,7 +173,7 @@ defmodule EthereumJSONRPC do
          nil = _block_number
        ) do
     params = [%{to: address, data: data}, "latest"]
-    request(%{id: id, method: "eth_call", params: params})
+    request(%{id: id, method: "energi_call", params: params})
   end
 
   defp build_eth_call_payload(
@@ -181,7 +181,7 @@ defmodule EthereumJSONRPC do
          block_number
        ) do
     params = [%{to: address, data: data}, integer_to_quantity(block_number)]
-    request(%{id: id, method: "eth_call", params: params})
+    request(%{id: id, method: "energi_call", params: params})
   end
 
   @doc """
@@ -427,7 +427,7 @@ defmodule EthereumJSONRPC do
   end
 
   defp get_balance_request(%{id: id, block_quantity: block_quantity, hash_data: hash_data}) do
-    request(%{id: id, method: "eth_getBalance", params: [hash_data, block_quantity]})
+    request(%{id: id, method: "energi_getBalance", params: [hash_data, block_quantity]})
   end
 
   defp get_balance_responses_to_balances_params(responses, id_to_params)
@@ -483,7 +483,7 @@ defmodule EthereumJSONRPC do
   end
 
   defp get_block_by_hash_request(%{id: id} = options) do
-    request(%{id: id, method: "eth_getBlockByHash", params: get_block_by_hash_params(options)})
+    request(%{id: id, method: "energi_getBlockByHash", params: get_block_by_hash_params(options)})
   end
 
   defp get_block_by_hash_params(%{hash: hash} = options) do
@@ -497,11 +497,11 @@ defmodule EthereumJSONRPC do
   end
 
   defp get_block_by_number_request(%{id: id} = options) do
-    request(%{id: id, method: "eth_getBlockByNumber", params: get_block_by_number_params(options)})
+    request(%{id: id, method: "energi_getBlockByNumber", params: get_block_by_number_params(options)})
   end
 
   defp get_block_by_tag_request(tag) do
-    # eth_getBlockByNumber accepts either a number OR a tag
+    # energi_getBlockByNumber accepts either a number OR a tag
     get_block_by_number_request(%{id: 0, tag: tag, transactions: :hashes})
   end
 

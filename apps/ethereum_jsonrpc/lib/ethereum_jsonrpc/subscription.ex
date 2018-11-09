@@ -16,7 +16,7 @@ defmodule EthereumJSONRPC.Subscription do
   @type event :: String.t()
 
   @typedoc """
-  Subscription ID returned from `eth_subscribe` and used to canceled a subscription with `eth_unsubscribe`.
+  Subscription ID returned from `energi_subscribe` and used to canceled a subscription with `energi_unsubscribe`.
   """
   @type id :: String.t()
 

@@ -24,7 +24,7 @@ defmodule EthereumJSONRPC.WebSocket.Cowboy.WebSocketHandler do
     json = Jason.decode!(text)
 
     case json do
-      %{"id" => id, "method" => "eth_subscribe", "params" => ["newHeads"]} ->
+      %{"id" => id, "method" => "energi_subscribe", "params" => ["newHeads"]} ->
         subscription_id = :erlang.unique_integer()
         response = %{id: id, result: subscription_id}
         frame = {:text, Jason.encode!(response)}

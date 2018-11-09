@@ -172,7 +172,7 @@ defmodule EthereumJSONRPC.WebSocket.WebSocketClient do
           %Registration{
             type: :unsubscribe,
             from: from,
-            request: %{method: "eth_unsubscribe", params: [subscription_id]}
+            request: %{method: "energi_unsubscribe", params: [subscription_id]}
           }},
          %__MODULE__{
            request_id_to_registration: request_id_to_registration,
@@ -312,7 +312,7 @@ defmodule EthereumJSONRPC.WebSocket.WebSocketClient do
        )
        when is_binary(event) and is_list(params) do
     unique_id = unique_request_id(state)
-    request = request(%{id: unique_id, method: "eth_subscribe", params: [event | params]})
+    request = request(%{id: unique_id, method: "energi_subscribe", params: [event | params]})
 
     {:ok, request,
      %__MODULE__{
@@ -333,7 +333,7 @@ defmodule EthereumJSONRPC.WebSocket.WebSocketClient do
     case subscription_reference_to_subscription_id do
       %{^subscription_reference => subscription_id} ->
         unique_id = unique_request_id(state)
-        request = request(%{id: unique_id, method: "eth_unsubscribe", params: [subscription_id]})
+        request = request(%{id: unique_id, method: "energi_unsubscribe", params: [subscription_id]})
 
         {
           :ok,
@@ -457,7 +457,7 @@ defmodule EthereumJSONRPC.WebSocket.WebSocketClient do
          %Registration{
            type: :unsubscribe,
            from: from,
-           request: %{method: "eth_unsubscribe", params: [subscription_id]}
+           request: %{method: "energi_unsubscribe", params: [subscription_id]}
          },
          response,
          %__MODULE__{
@@ -532,7 +532,7 @@ defmodule EthereumJSONRPC.WebSocket.WebSocketClient do
                                                                               acc_request_id_to_registration
                                                                           } = acc_state ->
       request_id = unique_request_id(acc_state)
-      request = request(%{id: request_id, method: "eth_subscribe", params: [event | params]})
+      request = request(%{id: request_id, method: "energi_subscribe", params: [event | params]})
 
       :websocket_client.cast(self(), frame(request))
 

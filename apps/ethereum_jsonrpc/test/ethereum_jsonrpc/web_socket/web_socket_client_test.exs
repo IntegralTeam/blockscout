@@ -144,7 +144,7 @@ defmodule EthereumJSONRPC.WebSocket.WebSocketClientTest do
     %Registration{
       type: type,
       from: {self(), make_ref()},
-      request: %{id: unique_request_id(), method: "eth_subscribe", params: ["newHeads"]}
+      request: %{id: unique_request_id(), method: "energi_subscribe", params: ["newHeads"]}
     }
   end
 
@@ -152,7 +152,7 @@ defmodule EthereumJSONRPC.WebSocket.WebSocketClientTest do
     %Registration{
       type: type,
       from: {self(), make_ref()},
-      request: %{id: unique_request_id(), method: "eth_unsubscribe", params: [subscription_id]}
+      request: %{id: unique_request_id(), method: "energi_unsubscribe", params: [subscription_id]}
     }
   end
 

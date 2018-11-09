@@ -12,16 +12,16 @@ defmodule EthereumJSONRPC.WebSocket.Registration do
   What kind of request will be issued by the caller
 
     * `:json_rpc` - a generic JSONRPC request that just needs to be returned to the caller based on `id` matching.
-    * `:subscribe` - an `eth_subscribe` request will be issued by the caller.  Its response need to be returned to
+    * `:subscribe` - an `energi_subscribe` request will be issued by the caller.  Its response need to be returned to
       caller **AND** the client needs to `EthereumJSONRPC.Subscription.publish/2` any `eth_subscription` messages to
       the caller until the `EthereumJSONRPC.WebSocket.Client.unsubscribe/1` is called.
-    * `:unsubscribe` - an `eth_unsubscribe` request will be issued by the caller.  Its response needs to be returned to
+    * `:unsubscribe` - an `energi_unsubscribe` request will be issued by the caller.  Its response needs to be returned to
       caller **AND** the client needs to stop tracking the subscription.
   """
   @type type :: :json_rpc | :subscribe | :unsubscribe
 
   @typedoc """
-  `"eth_subscribe"`
+  `"energi_subscribe"`
   """
   @type subscribe :: Transport.method()
 
@@ -43,7 +43,7 @@ defmodule EthereumJSONRPC.WebSocket.Registration do
   @type subscribe_params :: [event | event_param, ...]
 
   @typedoc """
-  `"eth_unsubscribe"`
+  `"energi_unsubscribe"`
   """
   @type unsubscribe :: Transport.method()
 
